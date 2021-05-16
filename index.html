@@ -4,11 +4,480 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dist/css/main.css" type="text/css">
     <title>Documentation Page</title>
 </head>
 <body>
-    <main id="main-doc">
+    <nav id="nav-bar">
 
+    </nav>
+    <main id="main-doc">
+        <section class="main-section"  id="C-type-system">
+            <header><h2>C++ type system</h2></header>
+            <p> The concept of type is very important in C++. Every variable, function argument, and function return value must
+                have a type in order to be compiled. Also, every expression (including literal values) is implicitly given a type by the 
+                compiler before it is evaluated. Some examples of types include <strong class="special-type">int</strong> to store integral values, <strong class="special-type">double</strong> to store 
+                floating-point values (also known as scalar data types), or the Standard Library class std::basic_string to store 
+                text. You can create your own type by defining a <strong class="special-type">class</strong> or <strong class="special-type">struct</strong>. The type specifies the amount of memory that
+                will be allocated for the variable (or expression result), the kinds of values that may be stored in that variable, 
+                how those values (as bit patterns) are interpreted, and the operations that can be performed on it. This article 
+                contains an informal overview of the major features of the C++ type system. Let’s see some terminology: 
+            </p>
+            <p>
+                <strong>Variables:</strong> The symbolic name of a quantity of data so that the name can be used to access the data it refers 
+                to throughout the scope of the code where it is defined. In C++, variable is generally used to refer to 
+                instances of scalar data types, whereas instances of other types are usually called objects. <br>
+                <strong>Object:</strong> For simplicity and consistency, this article uses the term object to refer to any instance of 
+                a class or structure, and when it is used in the general sense includes all types, even scalar variables. <br>
+                <strong>POD type:</strong> (plain old data): This informal category of data types in C++ refers to types that are scalar 
+                (see the Fundamental types section) or are POD classes. A POD class has no static data members that aren’t 
+                also PODs, and has no user-defined constructors, user-defined destructors, or user-defined assignment operators. 
+                Also, a POD class has no virtual functions, no base class, and no private or protected non-static data members.
+                POD types are often used for external data interchange, for example with a module written in the C language  
+                (which has POD types only).
+            </p>
+        </section>
+        <section class="main-section"  id="Scope">
+            <header><h2>Scope (C++)</h2></header>
+            <p>When you declare a program element such as a class, function, or variable, its name can only be "seen" and used in certain parts of your program. The context in which a name is visible is called its scope. For example, if you declare a variable x within a function, x is only visible within that function body. It has local scope. You may have other variables by the same name in your program; as long as they are in different scopes, they do not violate the One Definition Rule and no error is raised.
+                For automatic non-static variables, scope also determines when they are created and destroyed in program memory.
+                There are six kinds of scope:
+                <ul>
+                    <li><strong>Global space:</strong> A global name is one that is declared outside of any class, function, or namespace. However, in C++ even these names exist with an implicit global namespace. The scope of global names extends from the point of declaration to the end of the file in which they are declared. For global names, visibility is also governed by the rules of linkage which determine whether the name is visible in other files in the program.</li>
+                    <li><strong>Namespace scope:</strong> A name that is declared within a , outside of any class or enum definition or function block, is visible from its point of declaration to the end of the namespace. A namespace may be defined in multiple blocks across different files.</li>
+                    <li><strong>Local Scope:</strong> A name declared within a function or lambda, including the parameter names, have local scope. They are often referred to as "locals". They are only visible from their point of declaration to the end of the function or lambda body. Local scope is a kind of block scope, which is discussed later in this article.</li>
+                    <li><strong>Class Scope:</strong> Names of class members have class scope, which extends throughout the class definition regardless of the point of declaration. Class member accessibility is further controlled by the <strong class="special-type">public</strong>, <strong class="special-type">private</strong>, and <strong class="special-type">protected</strong> keywords. Public or protected members can be accessed only by using the member-selection operators (. or ->) or pointer-to-member operators (.* or ->*).</li>
+                    <li><strong>Statement scope:</strong> Names declared in a <strong class="special-type">for</strong>, <strong class="special-type">if</strong>, <strong class="special-type">while</strong>, or switch statement are visible until the end of the statement block.</li>
+                    <li><strong>Function scope:</strong> A label has function scope, which means it is visible throughout a function body even before its point of declaration. Function scope makes it possible to write statements like goto cleanup before the cleanup label is declared.</li>
+                </ul>
+            </p>
+        </section>
+        <section class="main-section"  id="Translation-units-linkage">
+            <header><h2>Translation units and linkage</h2></header>
+            <p>In a C++ program, a symbol, for example a variable or function name, can be declared any number of times within its scope, but it can only be defined once. This rule is the "One Definition Rule" (ODR). A declaration introduces (or re-introduces) a name into the program. A definition introduces a name. If the name represents a variable, a definition explicitly initializes it. A function definition consists of the signature plus the function body. A class definition consists of the class name followed by a block that lists all the class members. (The bodies of member functions may optionally be defined separately in another file.)
+            </p>
+            <p>
+                The following example shows some declarations:
+                <pre>
+                    <code>
+                        int i;
+                        int f(int x);
+                        class C;
+                    </code>
+                </pre>
+                The following example shows some definitions:
+                <pre>
+                    <code>
+                        int i{42};
+                        int f(int x){ return x * i; }
+                        class C {
+                        public:
+                        void DoSomething();
+                        };
+                    </code>
+                </pre>
+            </p>
+            <p>
+                A program consists of one or more translation units. A translation unit consists of an implementation file and all the headers that it includes directly or indirectly. Implementation files typically have a file extension of cpp or cxx. Header files typically have an extension of h or hpp. Each translation unit is compiled independently by the compiler. After the compilation is complete, the linker merges the compiled translation units into a single program. Violations of the ODR rule typically show up as linker errors. Linker errors occur when the same name has two different definitions in different translation units.
+                In general, the best way to make a variable visible across multiple files is to put it in a header file. Then add an #include directive in every cpp file that requires the declaration. By adding include guards around the header contents, you ensure that the names it declares are only defined once.
+                In C++20, modules are introduced as an improved alternative to header files.
+                In some cases it may be necessary to declare a global variable or class in a cpp file. In those cases, you need a way to tell the compiler and linker what kind of linkage the name has. The type of linkage specifies whether the name of the object applies just to the one file, or to all files. The concept of linkage applies only to global names. The concept of linkage does not apply to names that are declared within a scope. A scope is specified by a set of enclosing braces such as in function or class definitions.
+            </p>
+        </section>
+        <section class="main-section"  id="main-function">
+            <header><h2>main function and command-line arguments</h2></header>
+            <p>
+                All C++ programs must have a main function. If you try to compile a C++ program without a main function, the compiler raises an error. (Dynamic-link libraries and static libraries don't have a main function.) The main function is where your source code begins execution, but before a program enters the main function, all static class members without explicit initializers are set to zero. In Microsoft C++, global static objects are also initialized before entry to main. Several restrictions apply to the main function that don't apply to any other C++ functions. The main function:
+                <ul>
+                    <li>Can't be overloaded</li>
+                    <li>Can't be declared as inline.</li>
+                    <li>Can't be declared as static.</li>
+                    <li>Can't have its address taken.</li>
+                    <li>Can't be called from your program.</li>
+                </ul>
+            
+            </p>
+        </section>
+        <section class="main-section"  id="C-program-termination">
+            <header><h2>C++ program termination</h2></header>
+            <p>
+                In C++, you can exit a program in these ways:
+                <ul>
+                    <li>Call the <strong class="special-type">exit</strong> function. </li>
+                    <li>Call the <strong class="special-type">abort</strong> function. </li>
+                    <li> Execute a <strong class="special-type">return</strong> statement from <strong class="special-type">main.</strong></li>
+                </ul>
+            </p>
+            <h3><strong class="special-type">exit</strong> function</h3>
+            <p>The <strong class="special-type">exit</strong> function, declared in <<span>stdlib.h</span>>, terminates a C++ program. 
+                The value supplied as an argument to <strong class="special-type">exit</strong> is returned to
+                the operating system as the program's return code or exit code. By convention, a return code of zero means that the program 
+                completed successfully. You can use the constants EXIT_FAILURE and EXIT_SUCCESS, also defined in <<span>stdlib.h</span>>,
+                 to indicate success or failure of your program. <br> Issuing a <strong class="special-type">return</strong> 
+                statement from the main function is equivalent to calling the <strong class="special-type">exit</strong> 
+                function with the return value as its argument.  
+            </p>
+            <h3><strong class="special-type">abort</strong> function</h3>
+            <p>
+                The abort function, also declared in the standard include file <<span>stdlib.h</span>>, terminates a C++ program. 
+                The difference between exit and abort is that exit allows the C++ run-time termination processing to take place 
+                (global object destructors get called), but abort terminates the program immediately. The abort function bypasses 
+                the normal destruction process for initialized global static objects. It also bypasses any special processing that was 
+                specified using the atexit function.
+            </p>
+            <h3><strong class="special-type">atexit</strong> function</h3>
+            <p>
+                Use the <strong class="special-type">atexit</strong> function to specify actions that execute before the program terminates.
+                No global static objects initialized before the call to atexit are destroyed before execution of the exit-processing 
+                function.
+            </p>
+            <h3><strong class="special-type">return</strong> statement in <strong class="special-type">main</strong></h3>
+            <p>
+                Issuing a return statement from <strong class="special-type">main</strong> is functionally equivalent to calling the 
+                <strong class="special-type">exit</strong> function. <br> Consider the following example:
+                <pre>
+                    <code>
+                        <span class="comment">// return_statement.cpp</span> 
+                        #include <<span>stdlib.h</span>>
+                        int main()
+                        {
+                            exit( 3 );
+                            return 3;
+                        }
+                    </code>
+                </pre>
+            </p>
+            <p>
+                The <strong class="special-type">exit</strong> and <strong class="special-type">return</strong> 
+                statements in the preceding example are functionally identical. Normally, 
+                C++ requires that functions that have return types other than <strong class="special-type">void</strong> return a value. 
+                The main function is an exception; it can end without a return statement. In that case, it returns an 
+                implementation-specific value to the invoking process. The return statement allows you to specify a
+                <strong class="special-type">return</strong> value from main.
+            </p>
+        </section>
+        <section class="main-section"  id="Lvalues-Rvalues">
+            <header><h2>Lvalues and Rvalues (C++)</h2></header>
+            <p>
+                Every C++ expression has a type, and belongs to a value category. 
+                The value categories are the basis for rules that compilers must follow when creating,
+                copying, and moving temporary objects during expression evaluation. <br>
+                The C++17 standard defines expression value categories as follows:
+                <ul>
+                    <li>A <i>gl value</i> is an expression whose evaluation determines the identity of an object, bit-field, or function. </li>
+                    <li>A <i>prvalue</i> is an expression whose evaluation initializes an object or a bit-field, or computes the value of the operand of an operator, as specified by the context in which it appears. </li>
+                    <li>An <i>xvalue</i> is a glvalue that denotes an object or bit-field whose resources can be reused (usually because it is near the end of its lifetime). Example: Certain kinds of expressions involving rvalue references (8.3.2) yield xvalues, such as a call to a function whose return type is an rvalue reference or a cast to an rvalue reference type.</li>
+                    <li>An <i>lvalue</i> is a glvalue that is not an xvalue. </li>
+                    <li>An <i>rvalue</i> is a prvalue or an xvalue. </li>
+                </ul>
+            </p>
+            <p>
+                An lvalue has an address that your program can access. Examples of lvalue expressions include variable names,
+                including const variables, array elements, function calls that return an lvalue reference, bit-fields, unions,
+                and class members.
+            </p>
+                
+            <p>
+                A prvalue expression has no address that is accessible by your program. Examples of prvalue expressions include
+                literals, function calls that return a non-reference type, and temporary objects that are created during expression 
+                evalution but accessible only by the compiler.
+            </p>
+            <p>
+                An xvalue expression has an address that no longer accessible by your program but can be used to initialize an rvalue 
+                reference, which provides access to the expression. Examples include function calls that return an rvalue reference, 
+                and the array subscript, member and pointer to member expressions where the array or object is an rvalue reference.
+            </p>
+                
+            
+        </section>
+        <section class="main-section"  id="Temporary-Objets">
+            <header><h2>Temporary Objects</h2></header>
+            <p>
+                In some cases, it is necessary for the compiler to create temporary objects. 
+                These temporary objects can be created for the following reasons:
+                <ul>
+                    <li>To initialize a <strong class="special-type">const</strong> reference with an initializer of a type different 
+                        from that of the underlying type of the reference being initialized.</li>
+                    <li>
+                        <p>
+                        To store the return value of a function that returns a user-defined type. 
+                        These temporaries are created only if your program does not copy the return value to an object. For example:
+                        <pre>
+                            <code>
+                                UDT Func1();    //  Declare a function that returns a user-defined
+                                                //   type.
+                                
+                                ...
+                                
+                                Func1();        //  Call Func1, but discard return value.
+                                                //  A temporary object is created to store the return
+                                                //   value.
+                            </code>
+                        </pre>
+                        </p>
+                        <p>
+                            Because the return value is not copied to another object, a temporary object is created. 
+                            A more common case where temporaries are created is during the evaluation of an expression where
+                            overloaded operator functions must be called. These overloaded operator functions return a 
+                            user-defined type that often is not copied to another object.
+                        </p>
+                        <p>
+                            Consider the expression ComplexResult = Complex1 + Complex2 + Complex3. 
+                            The expression Complex1 + Complex2 is evaluated, and the result is stored in a temporary object.
+                            Next, the expression temporary + Complex3 is evaluated, and the result is copied to ComplexResult 
+                            (assuming the assignment operator is not overloaded).
+                        </p>
+                    </li>
+                    <li>
+                        To store the result of a cast to a user-defined type. When an object of a given type is explicitly 
+                        converted to a user-defined type, that new object is constructed as a temporary object.
+                    </li>
+                </ul>
+            </p>
+            <p>
+                Temporary objects have a lifetime that is defined by their point of creation and the point at which they are destroyed. 
+                Any expression that creates more than one temporary object eventually destroys them in the reverse order in which 
+                they were created. The points at which destruction occurs are shown in the following table.
+            </p>
+        </section>
+        <section class="main-section" id="Alignment">
+            <header><h2>Alignment</h2></header>
+            <p>
+                One of the low-level features of C++ is the ability to specify the precise alignment of objects in memory to take 
+                maximum advantage of a specific hardware architecture. By default, the compiler aligns class and struct members on 
+                their size value: <strong class="special-type">bool</strong> and <strong class="special-type">char</strong> 
+                on 1-byte boundaries, <strong class="special-type">short</strong> on 2-byte boundaries, 
+                <strong class="special-type">int</strong>, <strong class="special-type">long</strong>, 
+                and <strong class="special-type">float</strong> on 4-byte boundaries, 
+                and <strong class="special-type">long long</strong>, <strong class="special-type">double</strong>, 
+                and <strong class="special-type">long double</strong> on 8-byte boundaries.
+            </p>
+            <p>
+                In most scenarios, you never have to be concerned with alignment because the default alignment is already optimal. 
+                In some cases, however, you can achieve significant performance improvements, or memory savings, by specifying a custom 
+                alignment for your data structures. Before Visual Studio 2015 you could use the Microsoft-specific keywords
+                __<strong class="special-type">alignof</strong> and __<strong class="special-type">declspec(align)</strong>
+                to specify an alignment greater than the default. Starting in Visual Studio 2015 you 
+                should use the C++11 standard keywords <strong class="special-type">alignof</strong> and 
+                <strong class="special-type">aligna</strong>s for maximum code portability. The new keywords behave in the same way
+                under the hood as the Microsoft-specific extensions. The documentation for those extensions also applies 
+                to the new keywords. The C++ standard doesn't specify packing behavior for alignment on boundaries smaller than the 
+                compiler default for the target platform, so you still need to use the Microsoft #pragma pack in that case.
+            </p>
+            <p>
+                Use the aligned_storage class for memory allocation of data structures with custom alignments. 
+                The aligned_union class is for specifying alignment for unions with non-trivial constructors or destructors.
+            </p>
+        </section>
+        <section class="main-section" id="Trivial-Layout-Pod-littypes">
+            <header><h2>Trivial, standard-layout, POD, and literal types</h2></header>
+            <p>
+                The term <i>layout</i> refers to how the members of an object of class, 
+                struct or union type are arranged in memory. In some cases, the layout is well-defined 
+                by the language specification. But when a class or struct contains certain C++ language
+                features such as virtual base classes, virtual functions, members with different access control,
+                then the compiler is free to choose a layout. That layout may vary depending on what 
+                optimizations are being performed and in many cases the object might not even occupy a 
+                contiguous area of memory. For example, if a class has virtual functions, all the instances 
+                of that class might share a single virtual function table. Such types are very useful, 
+                but they also have limitations. Because the layout is undefined they cannot be passed to 
+                programs written in other languages, such as C, and because they might be non-contiguous
+                they cannot be reliably copied with fast low-level functions such as <strong class="special-type">memcopy</strong>, 
+                or serialized over a network.
+            </p>
+            <p>
+                To enable compilers as well as C++ programs and metaprograms to reason about the suitability 
+                of any given type for operations that depend on a particular memory layout, C++14 introduced
+                three categories of simple classes and structs: trivial, standard-layout, and POD or Plain 
+                Old Data. The Standard Library has the function templates <strong class="special-type">is_trivial<<span>T</span>></strong>, 
+                <strong class="special-type"> is_standard_layout<<span>T</span>></strong> and <strong class="special-type">is_pod<<span>T</span>></strong>
+                 that determine whether a given type belongs to a given category.
+            </p>    
+            <h3>Trivial types</h3>
+            <p>
+                When a class or struct in C++ has compiler-provided or explicitly defaulted special member functions, then it is a trivial type. It occupies a contiguous memory area. It can have members with different access specifiers. In C++, the compiler is free to choose how to order members in this situation. Therefore, you can memcopy such objects but you cannot reliably consume them from a C program. A trivial type T can be copied into an array of char or unsigned char, and safely copied back into a T variable. Note that because of alignment requirements, there might be padding bytes between type members.
+            </p>
+            <p>
+                Trivial types have a trivial default constructor, trivial copy constructor, trivial copy assignment operator and trivial destructor. In each case, trivial means the constructor/operator/destructor is not user-provided and belongs to a class that has
+                <ul>
+                    <li>no virtual functions or virtual base clases</li>
+                    <li>no base clases with a corresponding non-trivial constructor/operator/destructor</li>
+                    <li>no dat a members of class type corresponding non-trivial constructor/operator/destructor</li>
+                </ul>
+            </p>
+            <p>
+                The following examples show trivial types. In Trivial2, the presence of the
+                <strong class="special-type">Trivial2(int a, int b)</strong> constructor requires that you provide a default constructor. 
+                For the type to qualify as trivial, you must explicitly default that constructor.
+
+                <pre>
+                    <code>
+                        struct Trivial
+                        {
+                        int i;
+                        private:
+                        int j;
+                        };
+
+                        struct Trivial2
+                        {
+                        int i;
+                        Trivial2(int a, int b) : i(a), j(b) {}
+                        Trivial2() = default;
+                        private:
+                        int j;   <span class="comment">// Different access control</span>
+                        };
+                    </code>
+                </pre>
+            </p>
+            <h3>Standard layout types</h3>
+            <p>
+                When a class or struct does not contain certain C++ language features such as virtual functions which are not found in the C language, and all members have the same access control, it is a standard-layout type. It is memcopy-able and the layout is sufficiently defined that it can be consumed by C programs. Standard-layout types can have user-defined special member functions. In addition, standard layout types have these characteristics:
+                <ul>
+                    <li>no virtual functions or virtual base classes</li>
+                    <li>all non-static data members have the same access control</li>
+                    <li>all non-static members of class type are standard-layout</li>
+                    <li>any base classes are standard-layout</li>
+                    <li>has no base classes of the same type as the first non-static data member.</li>
+                    <li>meets one of these conditions:
+                        <ul>
+                            <li>no non-static data member in the most-derived class and no more than one base class with non-static data members, or</li>
+                            <li>has no base classes with non-static data members</li>
+                        </ul>
+                    </li>
+                </ul>
+                The following code shows one example of a standard-layout type:
+                <pre>
+                    <code>
+                        struct SL
+                        {
+                       <span class="comment">// All members have same access:</span> 
+                        int i;
+                        int j;
+                        SL(int a, int b) : i(a), j(b) {} <span class="comment">// User-defined constructor OK</span> 
+                        };
+                    </code>
+                </pre>
+                The last two requirements can perhaps be better illustrated with code. In the next example, even though Base is standard-layout, Derived is not standard layout because both it (the most derived class) and Base have non-static data members:
+                <pre>
+                    <code>
+                        struct Base
+                        {
+                        int i;
+                        int j;
+                        };
+
+                        <span class="comment">// std::is_standard_layout <<<span>Derived</span>> == false!</span> 
+                        struct Derived : public Base
+                        {
+                        int x;
+                        int y;
+                        };
+                    </code>
+                </pre>
+                        In this example <code>Derived</code> is standard-layout because <code>Base</code>  has no non-static data members:
+                <pre>
+                    <code>
+                        C++
+                        struct Base
+                        {
+                        void Foo() {}
+                        };
+
+                        <span class="comment">// std::is_standard_layout <<<span>Derived</span>> == true</span>
+                        struct Derived : public Base
+                        {
+                        int x;
+                        int y;
+                        };
+                    </code>
+                </pre>
+                Derived would also be standard-layout if <code>Base</code> had the data members and <code>Derived</code> had only member functions.
+            </p>
+            <h3>POD types</h3>
+            <p>
+                When a class or struct is both trivial and standard-layout, it is a POD (Plain Old Data) type. 
+                The memory layout of POD types is therefore contiguous and each member has a higher address than 
+                the member that was declared before it, so that byte for byte copies and binary I/O can be performed on these types.
+                Scalar types such as int are also POD types. POD types that are classes can have only POD types as non-static data members.
+            </p>
+            <h3>Example</h3>
+            <p>
+                The following example shows the distinctions between trivial, standard-layout, and POD types:
+                <pre>
+                    <code>
+                        #include <<span>type_traits</span>>
+                        #include <<span>iostream</span>> 
+                            
+                            using namespace std;
+                            
+                            struct B
+                            {
+                            protected:
+                               virtual void Foo() {}
+                            };
+                            
+                            // Neither trivial nor standard-layout
+                            struct A : B
+                            {
+                               int a;
+                               int b;
+                               void Foo() override {} // Virtual function
+                            };
+                            
+                            // Trivial but not standard-layout
+                            struct C
+                            {
+                               int a;
+                            private:
+                               int b;   // Different access control
+                            };
+                            
+                            // Standard-layout but not trivial
+                            struct D
+                            {
+                               int a;
+                               int b;
+                               D() {} //User-defined constructor
+                            };
+                            
+                            struct POD
+                            {
+                               int a;
+                               int b;
+                            };
+                            
+                            int main()
+                            {
+                               cout << boolalpha;
+                               cout << "A is trivial is " << is_trivial<<span>A</span>>() << endl; // false
+                               cout << "A is standard-layout is " << is_standard_layout<<span>A</span>>() << endl; <span class="comment">// false </span>
+                            
+                               cout << "C is trivial is " << is_trivial<<span>C</span>>() << endl; // true
+                               cout << "C is standard-layout is " << is_standard_layout<<span>C</span>>() << endl;  <span class="comment">// false </span>
+                            
+                               cout << "D is trivial is " << is_trivial<<span>D</span>>() << endl;  // false
+                               cout << "D is standard-layout is " << is_standard_layout<<span>D</span>>() << endl; <span class="comment">// true </span>
+                            
+                               cout << "POD is trivial is " << is_trivial<<span>POD</span>>() << endl; // true
+                               cout << "POD is standard-layout is " << is_standard_layout<<span>POD</span>>() << endl; <span class="comment">// true </span>
+                            
+                               return 0;
+                            }
+                    </code>
+                </pre>
+            </p>
+            <h3>Literal Types</h3>
+            <p>A literal type is one whose layout can be determined at compile time. The following are the literal types:
+                <ul>
+                    <li>void</li>
+                    <li>scalar types</li>
+                    <li>references</li>
+                    <li>Arrays of void, scalar types or references </li>
+                    <li>A class that has a trivial destructor, and one or more constexpr constructors that are not move or copy constructors. Additionally, all its non-static data members and base classes must be literal types and not volatile. </li>
+                </ul>
+            </p>
+        </section>
     </main>
 </body>
 </html>
