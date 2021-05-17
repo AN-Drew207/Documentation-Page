@@ -4,4 +4,124 @@
   margin: 0;
   padding: 0;
 }
+
+#body {
+  font-family: 'Lato', sans-serif;
+  color: #000;
+}
+
+#body #main-doc {
+  text-align: justify;
+  padding: 15px 5px;
+}
+
+#body #main-doc section h2 {
+  padding: 10px;
+}
+
+#body #main-doc section h3 {
+  padding: 10px 15px;
+}
+
+#body #main-doc section ul {
+  padding: 10px 15px 0px 50px;
+}
+
+#body #main-doc section ul li, #body #main-doc section ul pre code, #body #main-doc pre section ul code {
+  padding: 10px 5px 10px;
+}
+
+#body #main-doc section > p {
+  padding: 10px 15px 10px 25px;
+}
+
+#body #main-doc p .special-type {
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+#body #main-doc ul .special-type {
+  font-size: 15px;
+  font-weight: bold;
+  background-color: #ddd;
+  border: none;
+  border-radius: 3px;
+}
+
+#body #main-doc pre {
+  overflow-x: scroll;
+  border: 1px solid #000;
+}
+
+#nav-bar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin: 5px;
+  padding: 15px 0px;
+  overflow-y: scroll;
+}
+
+#nav-bar ul {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  list-style: none;
+}
+
+#nav-bar ul li, #nav-bar ul #body #main-doc pre code, #body #main-doc pre #nav-bar ul code {
+  border-top: 1px solid #000;
+  margin: 10px 0px;
+  padding: 20px 10px 0px;
+}
+
+#nav-bar ul li .nav-link, #nav-bar ul #body #main-doc pre code .nav-link, #body #main-doc pre #nav-bar ul code .nav-link {
+  color: #000;
+  text-decoration: none;
+}
+
+@media (min-width: 760px) {
+  #body {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: 310px minmax(450px, 1610px);
+        grid-template-columns: 310px minmax(450px, 1610px);
+  }
+  #nav-bar {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 300px;
+  }
+}
+
+@media (max-width: 760px) {
+  #body {
+    display: -ms-grid;
+    display: grid;
+    -ms-grid-columns: minmax(300px, 760px);
+        grid-template-columns: minmax(300px, 760px);
+  }
+  #nav-bar {
+    position: relative;
+    text-align: center;
+    -ms-grid-column-align: center;
+        justify-self: center;
+    width: 80vw;
+    border: 1px solid #000;
+  }
+}
 /*# sourceMappingURL=main.css.map */

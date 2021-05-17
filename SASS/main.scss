@@ -1,1 +1,107 @@
 @import 'config';
+@mixin flexContent($direction){
+    display: flex;
+    flex-direction: $direction;
+}
+
+@mixin special-text{
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+#body{
+    font-family: 'Lato', sans-serif;
+    color: #000;
+    #main-doc{
+        text-align: justify;
+        padding: 15px 5px;
+        section{
+            h2{
+                padding: 10px;
+            } 
+            h3{
+                padding: 10px 15px ;
+            }
+            ul{
+                padding: 10px 15px 0px 50px;
+                li{
+                    padding: 10px 5px 10px;
+                }
+            }
+        }
+        section > p{
+            padding: 10px 15px 10px 25px;
+        }
+        p{
+            .special-type{
+            @include special-text;
+            }
+        } 
+        ul {
+            .special-type{
+                @include special-text;
+            }   
+        }
+        pre{
+            overflow-x: scroll;
+            border: 1px solid #000;
+            code{
+                @extend li; 
+            }
+        }
+    }
+}
+
+#nav-bar{
+    @include flexContent(column);
+    margin: 5px;
+    padding: 15px 0px;
+    overflow-y: scroll;
+    ul{
+        @include flexContent(column);
+        list-style: none;
+        li{
+            border-top: 1px solid #000;
+            margin: 10px 0px;
+            padding: 20px 10px 0px;
+            .nav-link{
+                color: #000;
+                text-decoration: none;
+            }
+        } 
+    }
+}
+
+@media (min-width:760px){
+    #body{
+        display: grid;
+        grid-template-columns: 310px minmax(450px, 1610px);
+    }
+
+    #nav-bar{
+        position: sticky;
+        top: 0; left: 0;
+        height: 100vh;
+        width: 300px;
+    }
+
+}
+
+@media (max-width:760px){
+    #body{
+        display: grid;
+        grid-template-columns: minmax(300px, 760px);
+    }
+    #nav-bar{
+        position: relative;
+        text-align: center;
+        justify-self: center;
+        width: 80vw;
+        border: 1px solid #000;
+    }
+}
+
+
